@@ -1,4 +1,4 @@
-defmodule CHAT.MixProject do
+defmodule Chat.MixProject do
   use Mix.Project
 
   def project do
@@ -28,6 +28,6 @@ defmodule CHAT.MixProject do
   end
 
   defp escript do
-    [main_module: CHAT.CLI]
+    [main_module: Chat.Cli]
   end
 end
