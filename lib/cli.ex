@@ -18,6 +18,24 @@ defmodule CHAT.CLI do
     recive_command()
   end
 
+  defp exec_command(["/nickname" | params]) do
+    nickname = Enum.at(params, 0)
+    if nickname == nil do
+      IO.puts("\nPlease specify valid nickname")
+    else
+      IO.puts("\nHi #{nickname}")      
+    end
+    recive_command()
+  end
+
+  defp exec_command(["/join" | params]) do
+    # TODO
+  end
+
+  defp exec_command(["/leave"]) do
+    # TODO
+  end
+
   defp exec_command(["/exit"]) do
     IO.puts("Exiting from chat...")
   end
@@ -31,7 +49,6 @@ defmodule CHAT.CLI do
   defp recive_command do
     IO.gets("\n> ")
     |> String.trim
-    |> String.downcase
     |> String.split(" ")
     |> exec_command
   end
