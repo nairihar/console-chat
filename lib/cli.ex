@@ -13,11 +13,12 @@ defmodule CHAT.CLI do
     "/exit" => "Exits from chat."
   }
 
-  defp exec_command("/help") do
+  defp exec_command(["/help"]) do
     print_help_messages()
+    recive_command()
   end
 
-  defp exec_command("/exit") do
+  defp exec_command(["/exit"]) do
     IO.puts("Exiting from chat...")
   end
 
