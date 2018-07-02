@@ -1,6 +1,7 @@
 defmodule Chat.Cli do
   def main(_args) do
     IO.puts("Welcome to console based chat.")
+    SocketClient.start_link()
     print_help_messages()
     recive_command()
   end
