@@ -1,9 +1,18 @@
 defmodule Chat.Cli do
   def main(_args) do
-    IO.puts("Welcome to console based chat.")
-    SocketClient.start_link()
+    IO.puts("\nWelcome to console based chat.")
+    res = SocketClient.start_link()
+    if res == :error do
+      exit_cli()      
+    end
+
     print_help_messages()
     recive_command()
+  end
+
+  def exit_cli() do
+    IO.puts("\nShutting down process!")
+    System.halt(0)
   end
 
   @commands %{
@@ -45,7 +54,7 @@ defmodule Chat.Cli do
   end
 
   defp exec_command(["/exit" | _]) do
-    IO.puts("Exiting from chat...")
+    IO.puts("\nExiting from chat...")
   end
 
   defp exec_command(_) do
