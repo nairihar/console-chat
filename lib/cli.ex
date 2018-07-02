@@ -4,14 +4,13 @@ defmodule Chat.Cli do
     res = SocketClient.start_link()
     if res == :error do
       exit_cli()      
-    end
-
+    end    
     print_help_messages()
     recive_command()
   end
 
   def exit_cli() do
-    IO.puts("\nShutting down process!")
+    ColorPrint.yellow "\nShutting down process!"
     System.halt(0)
   end
 

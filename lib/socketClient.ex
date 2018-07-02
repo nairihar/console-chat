@@ -6,17 +6,18 @@ defmodule SocketClient do
     res = WebSockex.start_link(url, __MODULE__, :fake_state)
     case res do
       {:ok, _} ->
-        IO.puts("\nSocket Connected!")
+        ColorPrint.green "\nSocket Connected!"
         :ok
       {:error, term} ->
-        IO.puts("***\nError during Socket connection!\n***")
-        IO.inspect(term)        
+        ColorPrint.red "***\nError during Socket connection!\n"
+        IO.inspect(term)
+        ColorPrint.red "\n***"
         :error
     end
   end
 
   def terminate(_, _) do
-    IO.puts("\nSocket Disconnected!")
+    ColorPrint.red "\nSocket Disconnected!"
     Chat.Cli.exit_cli()
   end
 
