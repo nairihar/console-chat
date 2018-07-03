@@ -13,4 +13,9 @@ defmodule ColorPrint do
         out = IO.ANSI.format([IO.ANSI.light_yellow(), text, IO.ANSI.light_white()])
         IO.puts out
     end
+
+    def warn(text) do
+        out = IO.ANSI.format([IO.ANSI.yellow(), text, IO.ANSI.light_white()])
+        IO.puts out
+    end
 end

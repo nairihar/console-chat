@@ -1,20 +1,22 @@
 defmodule User do
-  @nickname nil
-  @channelName nil
-
-  def setNickname(name) do
-    nickname = name
+  def init() do
+    map = %{:nickname => nil, :channelName => nil}
+    Agent.start(fn -> map end)
   end
 
-  def getNickname() do
-    @nickname
+  def setNickname(pid, nickname) do
+    Agent.update(pid, fn(map) -> Map.put(map, :nickname, nickname) end)
   end
 
-  def setChannelName(channelName) do
-    channelName = channelName
+  def getNickname(pid) do
+    Agent.get(pid, fn(map) -> Map.get(map, :nickname) end)
   end
 
-  def getChannelName() do
-    @channelName
+  def setChannelName(pid, channelName) do
+    Agent.update(pid, fn(map) -> Map.put(map, :channelName, channelName) end)
+  end
+
+  def getChannelName(pid) do
+    Agent.get(pid, fn(map) -> Map.get(map, :channelName) end)
   end
 end

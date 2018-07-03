@@ -1,6 +1,7 @@
 defmodule Chat.Cli do
   def main(_args) do
     IO.puts("\nWelcome to console based chat.")
+    User.init()
     res = SocketClient.start_link()
     if res == :error do
       exit_cli()      
@@ -30,24 +31,31 @@ defmodule Chat.Cli do
   defp exec_command(["/nickname" | params]) do
     nickname = Enum.at(params, 0)
     if nickname == nil do      
-      IO.puts("\nPlease specify valid nickname")
+      ColorPrint.warn "\nPlease specify valid nickname"
     else
       User.setNickname(nickname)
-      IO.puts("\nHi #{nickname}")      
+      ColorPrint.green "\nHi #{nickname}"
     end
     recive_command()
   end
 
-  defp exec_command(["/join" | _]) do
-    # TODO
+  defp exec_command(["/join" | params]) do
+    channelName = Enum.at(params, 0)
+    if channelName == nil do
+      ColorPrint.warn "\nPlease specify channelName."
+    else
+      nickname = User.getNickname()
+      if nickname == nil do
+        ColorPrint.warn "\nPlease set nickname before joining."
+      end
+    end
+    recive_command()
   end
 
   defp exec_command(["/leave" | params]) do
     channelName = User.getChannelName()
     if channelName == nil do
-      IO.puts("\nPlease join a channel before leaving")
-    else
-      IO.puts("\nLeaving from #{channelName} channel.")
+      ColorPrint.warn "\nPlease join a channel before lefting."
     end
     recive_command()
   end
