@@ -57,10 +57,16 @@ wss.on('connection', (ws) => {
       switch (data.action) {
         case 0:
           joinChannel(userId, data.channelName);
+          break;
         case 1:
           leaveChannel(userId);
+          break;
         case 2:
           sendMessage(userId, data.message);
+          break;
+        case 3:
+          ws.nickname = data.nickname;
+          break;
         // TODO :: nickname, default
       }
     } catch(err) {
