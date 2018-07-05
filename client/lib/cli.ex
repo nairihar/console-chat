@@ -1,9 +1,10 @@
 defmodule Chat.Cli do
   def main(_args) do
     IO.puts("\nWelcome to console based chat.")
+    :ets.new(:buckets_registry, [:named_table, :public])
     User.init()
-    res = SocketClient.start_link()
-    if res == :error do
+    status = SocketClient.start_link()
+    if status == :error do
       exit_cli()      
     end    
     print_help_messages()
@@ -64,8 +65,12 @@ defmodule Chat.Cli do
     IO.puts("\nExiting from chat...")
   end
 
-  defp exec_command(_) do
-    IO.puts("\nWrong command.")
+  defp exec_command(messages) do
+    buckets = :ets.lookup(:buckets_registry, "socket")
+    {_, socketPid} = Enum.at(buckets, 0)
+    jsonStr = Poison.encode!(%{"action" => "2", "message" => Enum.join(messages, " ")})
+    SocketClient.send(socketPid, jsonStr)
+    # IO.puts("\nWrong command.")
     recive_command()
   end
 

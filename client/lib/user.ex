@@ -1,22 +1,22 @@
 defmodule User do
   def init() do
     map = %{:nickname => nil, :channelName => nil}
-    Agent.start(fn -> map end)
+    Agent.start(fn -> map end, name: __MODULE__)
   end
 
-  def setNickname(pid, nickname) do
-    Agent.update(pid, fn(map) -> Map.put(map, :nickname, nickname) end)
+  def setNickname(nickname) do
+    Agent.update(__MODULE__, fn(map) -> Map.put(map, :nickname, nickname) end)
   end
 
-  def getNickname(pid) do
-    Agent.get(pid, fn(map) -> Map.get(map, :nickname) end)
+  def getNickname() do
+    Agent.get(__MODULE__, fn(map) -> Map.get(map, :nickname) end)
   end
 
-  def setChannelName(pid, channelName) do
-    Agent.update(pid, fn(map) -> Map.put(map, :channelName, channelName) end)
+  def setChannelName(channelName) do
+    Agent.update(__MODULE__, fn(map) -> Map.put(map, :channelName, channelName) end)
   end
 
-  def getChannelName(pid) do
-    Agent.get(pid, fn(map) -> Map.get(map, :channelName) end)
+  def getChannelName() do
+    Agent.get(__MODULE__, fn(map) -> Map.get(map, :channelName) end)
   end
 end

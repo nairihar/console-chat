@@ -5,7 +5,8 @@ defmodule SocketClient do
     url = Application.get_env(:socket, :url)
     res = WebSockex.start_link(url, __MODULE__, :fake_state)
     case res do
-      {:ok, _} ->
+      {:ok, pid} ->
+        :ets.insert(:buckets_registry, {"socket", pid})
         ColorPrint.green "\nSocket Connected!"
         :ok
       {:error, term} ->
@@ -16,17 +17,17 @@ defmodule SocketClient do
     end
   end
 
-  def handle_cast({:send, {type, msg} = frame}, :fake_state) do
-    IO.puts("\nSending #{type} frame with payload: #{msg}")
-    {:reply, frame, :fake_state}
+  def send(pid, message) do
+    IO.puts("\nSending: #{message}")
+    WebSockex.send_frame(pid, {:text, message})
   end
 
-  defp terminate(_, _) do
+  def terminate(_, _) do
     ColorPrint.red "\nSocket Disconnected!"
     Chat.Cli.exit_cli()
   end
 
-  defp handle_frame({type, msg}, :fake_state) do
+  def handle_frame({type, msg}, :fake_state) do
     IO.puts("\nReceived Message - Type: #{inspect type} -- Message: #{inspect msg}")
     {:ok, :fake_state}
   end

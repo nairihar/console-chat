@@ -22,7 +22,8 @@ defmodule Chat.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:websockex, "~> 0.4.0"}
+      {:websockex, "~> 0.4.0"},
+      {:poison, "~> 3.1"}
     ]
   end
 
