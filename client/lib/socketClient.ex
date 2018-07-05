@@ -18,7 +18,6 @@ defmodule SocketClient do
   end
 
   def send(pid, message) do
-    IO.puts("\nSending: #{message}")
     WebSockex.send_frame(pid, {:text, message})
   end
 
@@ -27,8 +26,10 @@ defmodule SocketClient do
     Chat.Cli.exit_cli()
   end
 
-  def handle_frame({type, msg}, :fake_state) do
-    IO.puts("\nReceived Message - Type: #{inspect type} -- Message: #{inspect msg}")
+  def handle_frame({_, res}, :fake_state) do
+    map = Poison.decode!(res)
+    {:ok, message } = Map.fetch(map, "message")
+    ColorPrint.blue message
     {:ok, :fake_state}
   end
 end

@@ -8,6 +8,7 @@ const channels = {};
 
 function joinChannel(userId, channelName) {
   const userWs = users[userId];
+  const { nickname } = userWs;
   userWs.channelName = channelName;
 
   if (!channels[channelName]) {
@@ -17,23 +18,32 @@ function joinChannel(userId, channelName) {
   channels[channelName].push(userId);
   sendChannelUsers(channelName, {
     action: 1,
-    message: `${ws.nickname} joined to channel.`
+    message: `${nickname} joined to channel.`
   });
 }
 
 function leaveChannel(userId) {
   const userWs = users[userId];
-  const channel = channels[userWs.channelName];
+  const { channelName, nickname } = userWs;
+  const channel = channels[channelName];
 
   channel.splice(channel.indexOf(userId), 1);
-  sendChannelUsers(userWs.channelName, {
+  sendChannelUsers(channelName, {
     action: 1,
-    message: `${ws.nickname} left from channel.`
+    message: `${nickname} left from channel.`
+  });
+}
+
+function sendMessage(userId, message) {
+  const userWs = users[userId];
+  const { channelName } = userWs;
+  sendChannelUsers(channelName, {
+    message: `${userWs.nickname}: ${message}`
   });
 }
 
 function sendChannelUsers(channelName, data) {
-  const channel = channels[userWs.channelName];
+  const channel = channels[channelName];
   channel.forEach((userId) => {
     sendToUser(userId, data);
   });
@@ -51,7 +61,6 @@ wss.on('connection', (ws) => {
   console.log(`Connected: ${userId}`);
 
   ws.on('message', (message) => {
-    console.log(`Received - ${userId}: ${message}`);
     try {
       const data = JSON.parse(message);
       switch (data.action) {
@@ -79,7 +88,8 @@ wss.on('connection', (ws) => {
   });
 
   ws.on('close', () => {
-    console.log(`Disconnected: ${userId}`);
+    console.log(`Disconnected: ${userId}`);    
+    leaveChannel(userId);
     users[userId] = null;
   });
 });

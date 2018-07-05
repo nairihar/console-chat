@@ -20,8 +20,8 @@ defmodule Chat.Cli do
     "/help" => "Shows chat supported commands",
     "/nickname" => "Example: \"/nickname Nairi\".",
     "/join" => "Example: \"/join channelName\".",
-    "/leave" => "Leaves chat.",
-    "/exit" => "Exits from chat."
+    "/left" => "Left from chat.",
+    "/exit" => "Exit from chat."
   }
 
   defp exec_command(["/help" | _]) do
@@ -36,7 +36,8 @@ defmodule Chat.Cli do
     else
       User.setNickname(nickname)
       ColorPrint.green "\nHi #{nickname}"
-    end
+      send(%{ "action" => 3, "nickname" => nickname})
+    end    
     recive_command()
   end
 
@@ -48,16 +49,27 @@ defmodule Chat.Cli do
       nickname = User.getNickname()
       if nickname == nil do
         ColorPrint.warn "\nPlease set nickname before joining."
+      else
+        joinedChannelName = User.getChannelName()
+        if joinedChannelName != nil do
+          ColorPrint.warn "\nPlease left from current channel befor joining other."
+        else        
+          User.setChannelName(channelName)
+          send(%{ "action" => 0, "channelName" => channelName})
+        end
       end
-    end
+    end    
     recive_command()
   end
 
-  defp exec_command(["/leave" | params]) do
+  defp exec_command(["/left" | _]) do
     channelName = User.getChannelName()
     if channelName == nil do
       ColorPrint.warn "\nPlease join a channel before lefting."
-    end
+    else
+      User.setChannelName(nil)
+      send(%{ "action" => 1 })
+    end    
     recive_command()
   end
 
@@ -66,12 +78,20 @@ defmodule Chat.Cli do
   end
 
   defp exec_command(messages) do
+    channelName = User.getChannelName()
+    if channelName == nil do
+      ColorPrint.warn "\nPlease join a channel before send a message."
+    else
+      send(%{"action" => 2, "message" => Enum.join(messages, " ")})
+    end
+    recive_command()
+  end
+
+  defp send(data) do
     buckets = :ets.lookup(:buckets_registry, "socket")
     {_, socketPid} = Enum.at(buckets, 0)
-    jsonStr = Poison.encode!(%{"action" => "2", "message" => Enum.join(messages, " ")})
+    jsonStr = Poison.encode!(data)
     SocketClient.send(socketPid, jsonStr)
-    # IO.puts("\nWrong command.")
-    recive_command()
   end
 
   defp print_help_messages do
