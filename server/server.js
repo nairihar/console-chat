@@ -27,11 +27,13 @@ function leaveChannel(userId) {
   const { channelName, nickname } = userWs;
   const channel = channels[channelName];
 
-  channel.splice(channel.indexOf(userId), 1);
-  sendChannelUsers(channelName, {
-    action: 1,
-    message: `${nickname} left from channel.`
-  });
+  if (channel) {
+    channel.splice(channel.indexOf(userId), 1);
+    sendChannelUsers(channelName, {
+      action: 1,
+      message: `${nickname} left from channel.`
+    });
+  }
 }
 
 function sendMessage(userId, message) {
